@@ -1,15 +1,33 @@
 'use client'
 import { Box, Button, Stack, TextField } from "@mui/material";
 import Image from "next/image";
-import { useState, useInsertionEffect } from "react";
+import { useState, useInsertionEffect, useEffect  } from "react";
+
+
 
 export default function Home() {
+  const contentList = ["Hello! How can I assist you today?", "How may I help you today?",
+    "Thank you for reaching out to us. What can I do for you?",
+    "Hi there! Is there anything I can help you with?",
+    "Welcome! How can I make your day better today?",
+    "Hello! What can I assist you with today?",
+    "Hello! We’re here to help. What do you need assistance with?"
+  ]
+
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: `Hi, I'm the customer service agent. How can I assist you today?`
+      content: ""
     }
   ])
+
+  useEffect(() => {
+    const pickGreeting = () => {
+      return contentList[Math.floor(Math.random() * contentList.length)];
+    };
+
+    setMessages([{ role: 'assistant', content: pickGreeting() }]);
+  }, []);
 
   const [message, setMessage] = useState('')
 
@@ -17,28 +35,28 @@ export default function Home() {
     setMessage('')
     setMessages((messages) => [
       ...messages,
-      {role: 'user', content: message},
-      {role: 'assistant', content: ''}
+      { role: 'user', content: message },
+      { role: 'assistant', content: '' }
     ])
     const response = fetch('/api/chat', {
       method: "POST",
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify([...messages, {role: 'user', content: message}])
-    }).then( async (res) => {
+      body: JSON.stringify([...messages, { role: 'user', content: message }])
+    }).then(async (res) => {
       const reader = res.body.getReader()
       const decoder = new TextDecoder()
 
       let result = ''
-      return reader.read().then(function processText({done, value}) {
+      return reader.read().then(function processText({ done, value }) {
         if (done)
           return result;
-        const text = decoder.decode(value || new Int8Array(), {stream: true})
+        const text = decoder.decode(value || new Int8Array(), { stream: true })
         setMessages((messages) => {
           let lastMessage = messages[messages.length - 1]
           let otherMessages = messages.slice(0, messages.length - 1)
-          return [...otherMessages, {...lastMessage, content: lastMessage.content + text}]
+          return [...otherMessages, { ...lastMessage, content: lastMessage.content + text }]
         })
         return reader.read().then(processText)
       })
@@ -59,7 +77,7 @@ export default function Home() {
             ))
           }
         </Stack>
-        { /* this stack below isn't showing */ }
+        { /* this stack below isn't showing */}
         <Stack direction="row" spacing={2}>
           <TextField label="message" fullWidth value={message} onChange={(e) => setMessage(e.target.value)}></TextField>
           <Button variant="contained" onClick={sendMessage}>Send</Button>
