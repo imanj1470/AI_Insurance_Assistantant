@@ -32,6 +32,8 @@ export default function Home() {
   const [message, setMessage] = useState('');
 
   const sendMessage = async () => {
+    if (!message)
+      return;
     setMessage('');
     setMessages((prevMessages) => [
         ...prevMessages,
@@ -157,6 +159,12 @@ sx={{
         fullWidth
         value={message}
         onChange={(e) => setMessage(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key == 'Enter') {
+            e.preventDefault()
+            sendMessage()
+          }
+        }}
         variant="outlined"
         sx={{
           bgcolor: "white",
