@@ -9,7 +9,7 @@ export default function Home() {
   const contentList = ["Hello! How can I assist you today?", "How may I help you today?",
     "Thank you for reaching out to us. What can I do for you?",
     "Hi there! Is there anything I can help you with?",
-    "Welcome! How can I make your day better today?",
+    "Welcome! How can I make your day better?",
     "Hello! What can I assist you with today?",
     "Hello! We’re here to help. What do you need assistance with?"
   ]
