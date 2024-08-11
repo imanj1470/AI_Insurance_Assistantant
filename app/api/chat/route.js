@@ -1,6 +1,8 @@
+// pages/api/chat.js or similar file
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { ChatOpenAI } from '@langchain/openai';
+
 import { JSONLoader } from 'langchain/document_loaders/fs/json';
 import { PromptTemplate } from '@langchain/core/prompts';
 import { RunnableSequence } from '@langchain/core/runnables';
@@ -21,10 +23,8 @@ export const dynamic = 'force-dynamic';
 export async function POST(req) {
     try {
         const data = await req.json();
-
         const currentMessageContent = data[data.length - 1].content;
         const docs = await loader.load();
-
         const prompt = PromptTemplate.fromTemplate(TEMPLATE);
 
         const chain = RunnableSequence.from([

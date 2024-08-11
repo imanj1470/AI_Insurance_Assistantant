@@ -6,20 +6,21 @@ import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 
 export default function Home() {
-  const contentList = ["Hello! How can I assist you today?", "How may I help you today?",
+  const contentList = [
+    "Hello! How can I assist you today?", "How may I help you today?",
     "Thank you for reaching out to us. What can I do for you?",
     "Hi there! Is there anything I can help you with?",
-    "Welcome! How can I make your day better?",
+    "Welcome! How can I make your day better today?",
     "Hello! What can I assist you with today?",
     "Hello! We’re here to help. What do you need assistance with?"
-  ]
+  ];
 
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
       content: ""
     }
-  ])
+  ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const openModal = () => setIsModalOpen(true);
@@ -46,7 +47,7 @@ export default function Home() {
     setMessages([{ role: 'assistant', content: pickGreeting() }]);
   }, []);
 
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState('');
 
   const sendMessage = async () => {
     if (!message)
