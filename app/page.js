@@ -1,7 +1,7 @@
 'use client'
-import { Box, Button, Stack, TextField } from "@mui/material";
+import { Box, Button, Stack, TextField, Typography } from "@mui/material";
 import Image from "next/image";
-import { useState, useInsertionEffect, useEffect  } from "react";
+import { useState, useInsertionEffect, useEffect } from "react";
 
 
 
@@ -64,25 +64,43 @@ export default function Home() {
   }
 
   return (
-    <Box width="100vw" height="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
-      <Stack direction="column" width="600px" height="700px" border="1px solid black" p={2} spacing={2}>
-        <Stack direction="column" spacing={2} flexGrow={1} overflow="auto" maxHeight="100%">
-          {
-            messages.map((message, index) => (
-              <Box key={index} display='flex' justifyContent={message.role === 'assistant' ? 'flex-start' : 'flex-end'}>
-                <Box p={3} borderRadius={16} color="white" bgcolor={message.role === 'assistant' ? 'primary.main' : 'secondary.main'}>
-                  {message.content}
-                </Box>
-              </Box>
-            ))
-          }
-        </Stack>
-        { /* this stack below isn't showing */}
-        <Stack direction="row" spacing={2}>
-          <TextField label="message" fullWidth value={message} onChange={(e) => setMessage(e.target.value)}></TextField>
-          <Button variant="contained" onClick={sendMessage}>Send</Button>
-        </Stack>
-      </Stack>
-    </Box>
+    <>
+      <Box width="100vw" height="100vh" display="flex" justifyContent="center" 
+      alignItems="center" gap={2} flexDirection="column"
+      /* bgcolor="#F8F0E3" */ bgcolor="#fffcf5"
+      >
+
+        <Box width="60vw" height = "15vh" bgcolor="#D2B8FC" marginTop="12px" 
+        borderRadius={1} display="flex" justifyContent="center" alignItems="center">
+        <Typography fontFamily="cursive" colour="#333" variant="h4">Customer Assistant</Typography>
+        </Box>
+
+        <Box width="100vw" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
+          <Stack direction="column" width="60vw" height="80vh" border="1px solid black" p={2} spacing={2}
+          borderRadius={1} marginBottom="20px" bgcolor="#f5f7d7"
+          >
+            <Stack direction="column" spacing={2} flexGrow={1} overflow="auto" maxHeight="100%">
+              {
+                messages.map((message, index) => (
+                  <Box key={index} display='flex' justifyContent={message.role === 'assistant' ? 'flex-start' : 'flex-end'}>
+                    <Box p={3} borderRadius={16} color="white" bgcolor={message.role === 'assistant' ? 'rgba(184, 188, 188, 0.64)' : '#3437EF'}>
+                      <Typography color="black">{message.content}</Typography>
+                    </Box>
+                  </Box>
+                ))
+              }
+            </Stack>
+            { /* this stack below isn't showing */}
+            <Stack direction="row" spacing={2}>
+              <TextField label="Message" fullWidth value={message} onChange={(e) => setMessage(e.target.value)}></TextField>
+              <Button variant="contained" onClick={sendMessage}  
+              sx = {{bgcolor:"#447bc9"}}
+              >Send</Button>
+            </Stack>
+          </Stack>
+        </Box>
+
+      </Box>
+    </>
   )
 }
