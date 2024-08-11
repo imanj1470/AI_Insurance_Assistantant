@@ -1,6 +1,6 @@
 'use client'
 import { Box, Button, Stack, TextField, Typography, Modal, IconButton } from "@mui/material";
-import { useState, useEffect } from "react";
+import { useState, useEffect,useInsertionEffect, useRef  } from "react";
 import Image from 'next/image';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
@@ -34,6 +34,8 @@ export default function Home() {
   };
 
 
+
+
   useEffect(() => {
     const pickGreeting = () => {
       return contentList[Math.floor(Math.random() * contentList.length)];
@@ -47,35 +49,37 @@ export default function Home() {
   const [message, setMessage] = useState('')
 
   const sendMessage = async () => {
-    setMessage('')
-    setMessages((messages) => [
-      ...messages,
-      { role: 'user', content: message },
-      { role: 'assistant', content: '' }
-    ])
-    const response = fetch('/api/chat', {
-      method: "POST",
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify([...messages, { role: 'user', content: message }])
-    }).then(async (res) => {
-      const reader = res.body.getReader()
-      const decoder = new TextDecoder()
-
-      let result = ''
-      return reader.read().then(function processText({ done, value }) {
-        if (done)
-          return result;
-        const text = decoder.decode(value || new Int8Array(), { stream: true })
+    if (!message)
+      return;
+    setMessage('');
+    setMessages((prevMessages) => [
+        ...prevMessages,
+        { role: 'user', content: message },
+        { role: 'assistant', content: '' }
+    ]);
+    try {
+      const response = await fetch('/api/chat', {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify([...messages, { role: 'user', content: message }])
+    });
+    const data = await response.json();
+    
+    if (data && data.content) {
         setMessages((messages) => {
-          let lastMessage = messages[messages.length - 1]
-          let otherMessages = messages.slice(0, messages.length - 1)
-          return [...otherMessages, { ...lastMessage, content: lastMessage.content + text }]
-        })
-        return reader.read().then(processText)
-      })
-    })
+            let updatedMessages = [...messages];
+            updatedMessages[updatedMessages.length - 1].content = data.content;
+            return updatedMessages;
+        });
+    } else {
+        console.error('Content property missing in the response');
+    }
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+
   }
 
   return (
@@ -173,11 +177,13 @@ export default function Home() {
             bgcolor="#ffffe6"
             boxShadow="0px 4px 15px rgba(0, 0, 0, 0.1)"
             overflow="hidden"
+            
           >
             <Stack
               direction="column"
               spacing={2}
               flexGrow={1}
+              padding={3}
               overflow="auto"
               maxHeight="100%"
               pr={1} // Adds padding to prevent scrollbar overlap
@@ -196,7 +202,7 @@ export default function Home() {
                     boxShadow="0px 3px 6px rgba(0, 0, 0, 0.1)"
                     maxWidth="70%"
                   >
-                    <Typography color="#0b1215">{message.content}</Typography>
+                    <Typography color="#0b1215">{message.content || <span style={{ opacity: 0.5 }}>Loading...</span>}</Typography>
                   </Box>
                 </Box>
               ))}
@@ -208,6 +214,12 @@ export default function Home() {
                 fullWidth
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key == 'Enter') {
+                    e.preventDefault()
+                    sendMessage()
+                  }
+                }}
                 variant="outlined"
                 sx={{
                   bgcolor: "white",
@@ -217,7 +229,10 @@ export default function Home() {
               />
               <Button
                 variant="contained"
-                onClick={sendMessage}
+                onClick={ () => {
+                  sendMessage()
+                }
+                  }
                 sx={{
                   bgcolor: "#447bc9",
                   color: "white",
