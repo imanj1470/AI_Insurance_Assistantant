@@ -1,9 +1,9 @@
 'use client'
-import { Box, Button, Stack, TextField, Typography } from "@mui/material";
-import Image from "next/image";
-import { useState, useInsertionEffect, useEffect } from "react";
-
-
+import { Box, Button, Stack, TextField, Typography, Modal, IconButton } from "@mui/material";
+import { useState, useEffect } from "react";
+import Image from 'next/image';
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
 
 export default function Home() {
   const contentList = ["Hello! How can I assist you today?", "How may I help you today?",
@@ -21,10 +21,25 @@ export default function Home() {
     }
   ])
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+
+  const [rating, setRating] = useState(0);
+  const handleClick = (value) => {
+    setRating(value);
+    //store in database
+    console.log(value)
+  };
+
+
   useEffect(() => {
     const pickGreeting = () => {
       return contentList[Math.floor(Math.random() * contentList.length)];
     };
+
+    closeModal()
 
     setMessages([{ role: 'assistant', content: pickGreeting() }]);
   }, []);
@@ -66,123 +81,185 @@ export default function Home() {
   return (
     <>
       <Box
-  width="100vw"
-  height="100vh"
-  display="flex"
-  justifyContent="center"
-  alignItems="center"
-  gap={2}
-  flexDirection="column"
-  p={2}
-  sx={{
-    background: 'linear-gradient(135deg, #1E3A8A 0%, #E0F2FF 100%)', // Deep blue to very light blue
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-  }}
->
-
-  <Box
-    width="60vw"
-    height="15vh"
-    bgcolor="#ffff80"
-    borderRadius={2}
-    display="flex"
-    justifyContent="center"
-    alignItems="center"
-    boxShadow="0px 4px 10px rgba(0, 0, 0, 0.1)"
-    p={2}
-  >
-    <Typography
-      fontFamily="cursive"
-      color="#333"
-      variant="h4"
-      fontWeight="bold"
-    >
-      Customer Assistant
-    </Typography>
-  </Box>
-
-  <Box
-    width="100vw"
-    display="flex"
-    flexDirection="column"
-    justifyContent="center"
-    alignItems="center"
-    mt={2}
-  >
-    <Stack
-      direction="column"
-      width="60vw"
-      height="75vh"
-      border="1px solid #ccc"
-      p={2}
-      spacing={2}
-      borderRadius={2}
-      bgcolor="#ffffe6"
-      boxShadow="0px 4px 15px rgba(0, 0, 0, 0.1)"
-      overflow="hidden"
-    >
-      <Stack
-        direction="column"
-        spacing={2}
-        flexGrow={1}
-        overflow="auto"
-        maxHeight="100%"
-        pr={1} // Adds padding to prevent scrollbar overlap
+        width="100vw"
+        height="100vh"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        gap={2}
+        flexDirection="column"
+        p={2}
+        sx={{
+          background: 'linear-gradient(135deg, #1E3A8A 0%, #E0F2FF 100%)', // Deep blue to very light blue
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
       >
-        {messages.map((message, index) => (
+        <Modal open={isModalOpen} onClose={closeModal}>
           <Box
-            key={index}
-            display="flex"
-            justifyContent={message.role === 'assistant' ? 'flex-start' : 'flex-end'}
-            p={1}
+            position="absolute"
+            top="50%"
+            left="50%"
+            sx={{ transform: "translate(-50%, -50%)", }}
+            width={500}
+            bgcolor="white"
+            border="2px solid #000"
+            boxShadow={24}
+            p={4}
+            display={"flex"}
+            flexDirection="column"
+            alignItems="center"
+            gap={3}
           >
-            <Box
-              p={2}
-              borderRadius={16}
-              bgcolor={message.role === 'assistant' ? 'rgba(184, 188, 188, 0.64)' : '#66adff'}
-              boxShadow="0px 3px 6px rgba(0, 0, 0, 0.1)"
-              maxWidth="70%"
-            >
-              <Typography color="#0b1215">{message.content}</Typography>
+            <Typography color="#212427" variant="h5">How do you rate your experience?</Typography>
+            <Box display="flex" alignItems="center">
+              {Array.from({ length: 5 }, (_, index) => (
+                <IconButton
+                  key={index}
+                  onClick={() => handleClick(index + 1)}
+                  sx={{
+                    p: 0,
+                    color: index < rating ? '#FFD700' : '#ccc',
+                  }}
+                >
+                  {index < rating ? <StarIcon /> : <StarBorderIcon />}
+                </IconButton>
+              ))}
             </Box>
-          </Box>
-        ))}
-      </Stack>
-      
-      <Stack direction="row" spacing={2} mt={1}>
-        <TextField
-          label="Type your message..."
-          fullWidth
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          variant="outlined"
-          sx={{
-            bgcolor: "white",
-            borderRadius: 1,
-            boxShadow: "0px 2px 4px rgba(0, 0, 100, 0.1)",
-          }}
-        />
-        <Button
-          variant="contained"
-          onClick={sendMessage}
-          sx={{
-            bgcolor: "#447bc9",
-            color: "white",
-            borderRadius: 1,
-            boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
-            "&:hover": {
-              bgcolor: "#3568a5",
-            },
-          }}
-        >
-          Send
-        </Button>
-      </Stack>
-    </Stack>
-  </Box>
 
-</Box>
+              <Button variant="contained" onClick={closeModal}>Submit</Button>
+          </Box>
+
+        </Modal>
+
+        <Box
+          width="60vw"
+          height="15vh"
+          bgcolor="#ffff80"
+          borderRadius={2}
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          boxShadow="0px 4px 10px rgba(0, 0, 0, 0.1)"
+          p={2}
+        >
+          <Typography
+            fontFamily="cursive"
+            color="#333"
+            variant="h4"
+            fontWeight="bold"
+          >
+            Customer Assistant
+          </Typography>
+        </Box>
+
+        <Box
+          width="100vw"
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          position="relative"
+          mt={2}
+        >
+          <Stack
+            direction="column"
+            width="60vw"
+            height="75vh"
+            border="1px solid #ccc"
+            p={2}
+            spacing={2}
+            borderRadius={2}
+            bgcolor="#ffffe6"
+            boxShadow="0px 4px 15px rgba(0, 0, 0, 0.1)"
+            overflow="hidden"
+          >
+            <Stack
+              direction="column"
+              spacing={2}
+              flexGrow={1}
+              overflow="auto"
+              maxHeight="100%"
+              pr={1} // Adds padding to prevent scrollbar overlap
+            >
+              {messages.map((message, index) => (
+                <Box
+                  key={index}
+                  display="flex"
+                  justifyContent={message.role === 'assistant' ? 'flex-start' : 'flex-end'}
+                  p={1}
+                >
+                  <Box
+                    p={2}
+                    borderRadius={16}
+                    bgcolor={message.role === 'assistant' ? 'rgba(184, 188, 188, 0.64)' : '#66adff'}
+                    boxShadow="0px 3px 6px rgba(0, 0, 0, 0.1)"
+                    maxWidth="70%"
+                  >
+                    <Typography color="#0b1215">{message.content}</Typography>
+                  </Box>
+                </Box>
+              ))}
+            </Stack>
+
+            <Stack direction="row" spacing={2} mt={1}>
+              <TextField
+                label="Type your message..."
+                fullWidth
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                variant="outlined"
+                sx={{
+                  bgcolor: "white",
+                  borderRadius: 1,
+                  boxShadow: "0px 2px 4px rgba(0, 0, 100, 0.1)",
+                }}
+              />
+              <Button
+                variant="contained"
+                onClick={sendMessage}
+                sx={{
+                  bgcolor: "#447bc9",
+                  color: "white",
+                  borderRadius: 1,
+                  boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
+                  "&:hover": {
+                    bgcolor: "#3568a5",
+                  },
+                }}
+              >
+                Send
+              </Button>
+            </Stack>
+          </Stack>
+
+          <Button
+            onClick={openModal}
+            sx={{
+              position: "absolute",
+              right: "20px",
+              bottom: "10px",
+              borderRadius: "50%",
+              width: "60px",
+              height: "60px",
+              boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
+              bgcolor: "#447bc9",
+              "&:hover": {
+                bgcolor: "#3568a5",
+              },
+              display: "flex",
+              flexDirection: "column", // This allows you to stack the icon and text
+              justifyContent: "center",
+              alignItems: "center",
+              padding: 0,
+            }}
+          >
+            <Image src="/star.png" width={22} height={22} />
+          </Button>
+
+        </Box>
+
+      </Box>
 
 
 
