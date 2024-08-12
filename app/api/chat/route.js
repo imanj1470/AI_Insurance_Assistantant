@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { ChatOpenAI } from '@langchain/openai';
+
 import { JSONLoader } from 'langchain/document_loaders/fs/json';
 import { PromptTemplate } from '@langchain/core/prompts';
 import { RunnableSequence } from '@langchain/core/runnables';
@@ -54,6 +55,7 @@ export async function POST(req) {
             question: currentMessageContent,
         });
 
+        // Assuming the completion object contains the response content.
         console.log("Completion object:", completion);
 
         // Extract content from the completion object
