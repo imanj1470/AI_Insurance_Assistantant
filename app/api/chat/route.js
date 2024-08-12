@@ -7,15 +7,24 @@ import { PromptTemplate } from '@langchain/core/prompts';
 import { RunnableSequence } from '@langchain/core/runnables';
 import { formatDocumentsAsString } from 'langchain/util/document';
 
-const TEMPLATE = `Answer the user's questions based only on the following context. If the answer is not in the context, reply politely that you do not have that information available.:
+
+const TEMPLATE = `You are an assistant that answers questions based on the following context. Use the context to provide accurate answers.
+
 ==============================
 Context: {context}
 ==============================
 
-user: {question}
-assistant:`;
+User Question: {question}
 
-const loader = new JSONLoader('src/data/states.json');
+Instructions:
+1. **Finding Values:** If the question involves finding the lowest or highest value in a dataset, analyze the context to determine the required data point and provide a precise answer, if a premium or a vehicle valueis 0 ignore it.
+2. **Prediction:** If asked for predictions, use the context to identify patterns and make a prediction based on available data. For example, if predicting premiums based on vehicle values, refer to the dataset to find the closest matching data and provide a prediction based on that.
+
+Examples:
+- If asked for the lowest premium based on the data, find the smallest premium value and provide it.
+- If asked to predict a premium based on a vehicle value, use historical data to estimate the premium for the given vehicle value.`;
+
+const loader = new JSONLoader('src/data/auto_insurance.json');
 
 export const dynamic = 'force-dynamic';
 
@@ -35,9 +44,9 @@ export async function POST(req) {
             new ChatOpenAI({
                 apiKey: process.env.OPENAI_API_KEY,
                 model: 'gpt-4o-mini',
-                temperature: 0.5,
+                temperature: 0,
                 streaming: false,
-                verbose: true,
+                verbose: false,
             }),
         ]);
 
