@@ -1,6 +1,6 @@
 'use client'
 import { Box, Button, Stack, TextField, Typography, Modal, IconButton } from "@mui/material";
-import { useState, useEffect,useInsertionEffect, useRef  } from "react";
+import { useState, useEffect, useInsertionEffect, useRef } from "react";
 import Image from 'next/image';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
@@ -53,32 +53,35 @@ export default function Home() {
     if (!message)
       return;
     setMessage('');
+    const newMessage = { role: 'user', content: message }
     setMessages((prevMessages) => [
-        ...prevMessages,
-        { role: 'user', content: message },
-        { role: 'assistant', content: '' }
+      ...prevMessages,
+      newMessage,
+      { role: 'assistant', content: '' }
     ]);
     try {
       const response = await fetch('/api/chat', {
         method: "POST",
         headers: {
-            'Content-Type': 'application/json'
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify([...messages, { role: 'user', content: message }])
-    });
-    const data = await response.json();
-    
-    if (data && data.content) {
+        body: JSON.stringify([...messages, newMessage])
+      });
+      const data = await response.json();
+
+      if (data && data.content) {
         setMessages((messages) => {
-            let updatedMessages = [...messages];
-            updatedMessages[updatedMessages.length - 1].content = data.content;
-            return updatedMessages;
+          let updatedMessages = [...messages];
+          updatedMessages[updatedMessages.length - 1].content = data.content;
+
+
+          return updatedMessages;
         });
-    } else {
+      } else {
         console.error('Content property missing in the response');
-    }
+      }
     } catch (error) {
-        console.error('Error fetching data:', error);
+      console.error('Error fetching data:', error);
     }
 
   }
@@ -132,7 +135,7 @@ export default function Home() {
               ))}
             </Box>
 
-              <Button variant="contained" onClick={closeModal}>Submit</Button>
+            <Button variant="contained" onClick={closeModal}>Submit</Button>
           </Box>
 
         </Modal>
@@ -178,7 +181,7 @@ export default function Home() {
             bgcolor="#ffffe6"
             boxShadow="0px 4px 15px rgba(0, 0, 0, 0.1)"
             overflow="hidden"
-            
+
           >
             <Stack
               direction="column"
@@ -230,10 +233,10 @@ export default function Home() {
               />
               <Button
                 variant="contained"
-                onClick={ () => {
+                onClick={() => {
                   sendMessage()
                 }
-                  }
+                }
                 sx={{
                   bgcolor: "#447bc9",
                   color: "white",
@@ -270,7 +273,7 @@ export default function Home() {
               padding: 0,
             }}
           >
-            <Image src="/star.png" width={22} height={22} />
+            <Image alt="star" src="/star.png" width={22} height={22} />
           </Button>
 
         </Box>
