@@ -4,7 +4,6 @@ import { useState, useEffect, useInsertionEffect, useRef } from "react";
 import Image from 'next/image';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
-
 export default function Home() {
   const contentList = [
     "Hello! How can I assist you today?", "How may I help you today?",
